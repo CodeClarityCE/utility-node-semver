@@ -6,7 +6,7 @@ import (
 
 	"github.com/CodeClarityCE/utility-node-semver/versions"
 
-	"golang.org/x/exp/slices"
+	"slices"
 )
 
 type RangeToTest struct {

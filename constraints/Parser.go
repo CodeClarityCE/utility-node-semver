@@ -10,7 +10,7 @@ import (
 	utils "github.com/CodeClarityCE/utility-node-semver/utils"
 	version "github.com/CodeClarityCE/utility-node-semver/versions"
 
-	"golang.org/x/exp/slices"
+	"slices"
 )
 
 var (
