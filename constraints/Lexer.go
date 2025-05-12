@@ -9,7 +9,7 @@ import (
 
 	versions "github.com/CodeClarityCE/utility-node-semver/versions"
 
-	"golang.org/x/exp/slices"
+	"slices"
 )
 
 func LexConstraint(constraint string) (tokens []Token, literals []string) {
