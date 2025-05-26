@@ -32,22 +32,40 @@ func ParseSemver(versionLiteral string) (Semver, error) {
 
 	versionParts := strings.Split(GetVersionPart(versionLiteral), ".")
 	if len(versionParts) != 3 {
-		return Semver{}, ErrInvalidVersionParts
-	}
+		if len(versionParts) == 2 {
+			for i, part := range versionParts {
+				parsed, err := strconv.Atoi(part)
+				if err != nil {
+					return Semver{}, ErrInvalidVersionParts
+				}
 
-	for i, part := range versionParts {
-		parsed, err := strconv.Atoi(part)
-		if err != nil {
+				switch i {
+				case 0:
+					semver.Major = parsed
+				case 1:
+					semver.Minor = parsed
+				}
+
+				semver.Patch = 0
+			}
+		} else {
 			return Semver{}, ErrInvalidVersionParts
 		}
+	} else {
+		for i, part := range versionParts {
+			parsed, err := strconv.Atoi(part)
+			if err != nil {
+				return Semver{}, ErrInvalidVersionParts
+			}
 
-		switch i {
-		case 0:
-			semver.Major = parsed
-		case 1:
-			semver.Minor = parsed
-		case 2:
-			semver.Patch = parsed
+			switch i {
+			case 0:
+				semver.Major = parsed
+			case 1:
+				semver.Minor = parsed
+			case 2:
+				semver.Patch = parsed
+			}
 		}
 	}
 
