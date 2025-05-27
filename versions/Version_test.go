@@ -787,7 +787,7 @@ func TestVersionParsing(t *testing.T) {
 		},
 		{
 			VersionString:  "5.66",
-			ExpectedResult: Semver{}, // missing patch
+			ExpectedResult: Semver{Major: 5, Minor: 66, Patch: 0}, // missing patch
 		},
 
 		// Invalid [major, minor, patch] version parts
