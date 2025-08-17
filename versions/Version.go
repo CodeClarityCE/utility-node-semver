@@ -13,7 +13,7 @@ type Semver struct {
 	Patch         int
 	PreReleaseTag string
 	MetaData      string
-	
+
 	// Composer-specific fields
 	IsDev     bool   // true for dev versions (dev-master, 1.0.x-dev)
 	DevBranch string // branch name for dev-* versions
@@ -65,7 +65,7 @@ func ParseSemverWithEcosystem(versionLiteral string, ecosystem string) (Semver, 
 	versionLiteral = strings.TrimPrefix(versionLiteral, "v")
 
 	versionParts := strings.Split(GetVersionPart(versionLiteral), ".")
-	
+
 	// Handle x.y.x patterns for Composer
 	if ecosystem == "composer" {
 		for i, part := range versionParts {

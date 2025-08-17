@@ -6,9 +6,9 @@ import (
 
 func TestComposerVersionParsing(t *testing.T) {
 	tests := []struct {
-		version   string
-		ecosystem EcosystemType
-		expectDev bool
+		version     string
+		ecosystem   EcosystemType
+		expectDev   bool
 		expectMajor int
 		expectMinor int
 		expectPatch int
@@ -51,10 +51,10 @@ func TestComposerDevVersionComparison(t *testing.T) {
 		v2       string
 		expected bool // true if v1 > v2
 	}{
-		{"dev-master", "1.0.0", true},  // Dev version > stable
-		{"1.0.0", "dev-master", false}, // Stable < dev version
+		{"dev-master", "1.0.0", true},       // Dev version > stable
+		{"1.0.0", "dev-master", false},      // Stable < dev version
 		{"dev-master", "dev-master", false}, // Same dev version
-		{"2.0.0", "1.9.9", true},       // Normal comparison
+		{"2.0.0", "1.9.9", true},            // Normal comparison
 	}
 
 	for _, test := range tests {
