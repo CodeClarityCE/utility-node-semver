@@ -29,13 +29,13 @@ func ParseSemverWithEcosystem(versionLiteral string, ecosystem EcosystemType) (v
 }
 
 // Parses a given node semver constraint string into a constraint object
-// DEPRECATED: Use ParseConstraintWithEcosystem for new code. Defaults to NodeJS ecosystem.
+// DEPRECATED: Use ParseConstraintWithEcosystem for new code. Defaults to NodeJS boilerplates.
 func ParseConstraint(constraintString string) (constraints.Constraint, error) {
 	return constraints.ParseConstraintWithEcosystem(constraintString, string(NodeJS))
 }
 
 // Parses a semver string into a semver object
-// DEPRECATED: Use ParseSemverWithEcosystem for new code. Defaults to NodeJS ecosystem.
+// DEPRECATED: Use ParseSemverWithEcosystem for new code. Defaults to NodeJS boilerplates.
 func ParseSemver(versionLiteral string) (versions.Semver, error) {
 	return versions.ParseSemverWithEcosystem(versionLiteral, string(NodeJS))
 }

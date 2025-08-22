@@ -120,7 +120,7 @@ func ParseSemverWithEcosystem(versionLiteral string, ecosystem string) (Semver, 
 }
 
 // Parses a semver string into a semver object
-// DEPRECATED: Use ParseSemverWithEcosystem for new code. Defaults to NodeJS ecosystem.
+// DEPRECATED: Use ParseSemverWithEcosystem for new code. Defaults to NodeJS boilerplates.
 func ParseSemver(versionLiteral string) (Semver, error) {
 	return ParseSemverWithEcosystem(versionLiteral, "nodejs")
 }
