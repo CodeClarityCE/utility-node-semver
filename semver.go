@@ -8,14 +8,36 @@ import (
 	versions "github.com/CodeClarityCE/utility-node-semver/versions"
 )
 
+// EcosystemType represents different package ecosystem types
+type EcosystemType string
+
+const (
+	// NodeJS represents Node.js/npm ecosystem with Node.js semver rules
+	NodeJS EcosystemType = "nodejs"
+	// Composer represents PHP/Composer ecosystem with Composer semver rules
+	Composer EcosystemType = "composer"
+)
+
+// Parses a given semver constraint string into a constraint object for specified ecosystem
+func ParseConstraintWithEcosystem(constraintString string, ecosystem EcosystemType) (constraints.Constraint, error) {
+	return constraints.ParseConstraintWithEcosystem(constraintString, string(ecosystem))
+}
+
+// Parses a semver string into a semver object for specified ecosystem
+func ParseSemverWithEcosystem(versionLiteral string, ecosystem EcosystemType) (versions.Semver, error) {
+	return versions.ParseSemverWithEcosystem(versionLiteral, string(ecosystem))
+}
+
 // Parses a given node semver constraint string into a constraint object
+// DEPRECATED: Use ParseConstraintWithEcosystem for new code. Defaults to NodeJS boilerplates.
 func ParseConstraint(constraintString string) (constraints.Constraint, error) {
-	return constraints.ParseConstraint(constraintString)
+	return constraints.ParseConstraintWithEcosystem(constraintString, string(NodeJS))
 }
 
 // Parses a semver string into a semver object
+// DEPRECATED: Use ParseSemverWithEcosystem for new code. Defaults to NodeJS boilerplates.
 func ParseSemver(versionLiteral string) (versions.Semver, error) {
-	return versions.ParseSemver(versionLiteral)
+	return versions.ParseSemverWithEcosystem(versionLiteral, string(NodeJS))
 }
 
 // Takes a version and semver constraint

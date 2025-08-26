@@ -123,6 +123,15 @@ func ParseConstraint(constraintString string) (Constraint, error) {
 	return constraint, nil
 }
 
+// ParseConstraintWithEcosystem parses a constraint string for specified ecosystem
+// For now, this wraps the existing ParseConstraint function
+// TODO: Add Composer-specific constraint handling (~, ^) in future
+func ParseConstraintWithEcosystem(constraintString string, ecosystem string) (Constraint, error) {
+	// For now, use existing logic regardless of ecosystem
+	// Future enhancement: Add Composer-specific constraint parsing
+	return ParseConstraint(constraintString)
+}
+
 func validateConstraintComposition(tokens []Token, literals []string) error {
 
 	joinOperatorsProcessed := []Token{}

@@ -13,6 +13,11 @@ type Semver struct {
 	Patch         int
 	PreReleaseTag string
 	MetaData      string
+
+	// Composer-specific fields
+	IsDev     bool   // true for dev versions (dev-master, 1.0.x-dev)
+	DevBranch string // branch name for dev-* versions
+	Stability string // stability flag (@stable, @RC, @beta, @alpha, @dev)
 }
 
 var (
@@ -21,16 +26,55 @@ var (
 	ErrInvalidMetaData     = errors.New("invalid meta data")
 )
 
-// Parses a semver string into a semver object
-func ParseSemver(versionLiteral string) (Semver, error) {
-
+// ParseSemverWithEcosystem parses a semver string into a semver object for specified ecosystem
+func ParseSemverWithEcosystem(versionLiteral string, ecosystem string) (Semver, error) {
 	if versionLiteral == "" {
 		return Semver{}, ErrInvalidVersionParts
 	}
 
 	semver := Semver{}
 
+	// Handle Composer-specific dev versions
+	if ecosystem == "composer" {
+		if strings.HasPrefix(versionLiteral, "dev-") {
+			semver.IsDev = true
+			semver.DevBranch = strings.TrimPrefix(versionLiteral, "dev-")
+			// Dev versions are considered maximum versions for their branch
+			semver.Major = 999
+			semver.Minor = 999
+			semver.Patch = 999
+			return semver, nil
+		}
+
+		if strings.HasSuffix(versionLiteral, "-dev") {
+			semver.IsDev = true
+			versionLiteral = strings.TrimSuffix(versionLiteral, "-dev")
+		}
+
+		// Handle stability flags (@stable, @RC, etc.)
+		if strings.Contains(versionLiteral, "@") {
+			parts := strings.Split(versionLiteral, "@")
+			if len(parts) == 2 {
+				versionLiteral = parts[0]
+				semver.Stability = parts[1]
+			}
+		}
+	}
+
+	// Remove 'v' prefix if present
+	versionLiteral = strings.TrimPrefix(versionLiteral, "v")
+
 	versionParts := strings.Split(GetVersionPart(versionLiteral), ".")
+
+	// Handle x.y.x patterns for Composer
+	if ecosystem == "composer" {
+		for i, part := range versionParts {
+			if part == "x" || part == "X" {
+				versionParts[i] = "999" // Treat wildcards as high numbers
+			}
+		}
+	}
+
 	if len(versionParts) != 3 {
 		if len(versionParts) == 2 {
 			for i, part := range versionParts {
@@ -75,9 +119,34 @@ func ParseSemver(versionLiteral string) (Semver, error) {
 	return semver, nil
 }
 
+// Parses a semver string into a semver object
+// DEPRECATED: Use ParseSemverWithEcosystem for new code. Defaults to NodeJS boilerplates.
+func ParseSemver(versionLiteral string) (Semver, error) {
+	return ParseSemverWithEcosystem(versionLiteral, "nodejs")
+}
+
 // Compares versions v1 and v2, and returns true if v1 >= v2 and false otherwise
-// This comparision is done according to the semver 2.0 spec
+// This comparision is done according to the semver 2.0 spec with Composer extensions
 func (v1 Semver) GE(v2 Semver, ignorePreRelease bool) bool {
+	// Handle dev version comparisons for Composer
+	if v1.IsDev && v2.IsDev {
+		// Both dev versions - compare by branch name
+		if v1.DevBranch != v2.DevBranch {
+			return v1.DevBranch >= v2.DevBranch
+		}
+		return true // Same dev branch is equal
+	}
+
+	if v1.IsDev && !v2.IsDev {
+		// Dev version is higher than stable version of same base
+		return true
+	}
+
+	if !v1.IsDev && v2.IsDev {
+		// Stable version is lower than dev version
+		return false
+	}
+
 	if v1.Major != v2.Major {
 		return v1.Major > v2.Major
 	}
