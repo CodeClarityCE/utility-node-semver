@@ -33,16 +33,21 @@ pipeline {
             }
             steps {
                 script {
-                    def mainConfigJson = sh(
-                        script: "git show origin/main:config.json",
-                        returnStdout: true
-                    ).trim()
-                    def mainConfig = readJSON text: mainConfigJson
-                    def mainVersion = mainConfig.version
-                    if (Version == mainVersion) {
-                        error "Version not bumped! Current: ${Version}, Main: ${mainVersion}. Please update config.json."
+                    def configExists = sh(script: "git show origin/main:config.json > /dev/null 2>&1", returnStatus: true) == 0
+                    if (configExists) {
+                        def mainConfigJson = sh(
+                            script: "git show origin/main:config.json",
+                            returnStdout: true
+                        ).trim()
+                        def mainConfig = readJSON text: mainConfigJson
+                        def mainVersion = mainConfig.version
+                        if (Version == mainVersion) {
+                            error "Version not bumped! Current: ${Version}, Main: ${mainVersion}. Please update config.json."
+                        }
+                        echo "Version check passed: ${mainVersion} -> ${Version}"
+                    } else {
+                        echo "No config.json on main branch yet, skipping version check"
                     }
-                    echo "Version check passed: ${mainVersion} -> ${Version}"
                 }
             }
         }
