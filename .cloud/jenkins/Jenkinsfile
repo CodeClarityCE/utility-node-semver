@@ -1,0 +1,105 @@
+pipeline {
+    agent { label 'codeclarity' }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        timestamps()
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+
+    tools {
+        go 'Go 1.24'
+    }
+
+    environment {
+        GITHUB_TOKEN = credentials('github-token')
+        GOPRIVATE = 'github.com/CodeClarityCE/*'
+    }
+
+    stages {
+        stage('Setup') {
+            steps {
+                sh 'go version'
+                script {
+                    def config = readJSON file: 'config.json'
+                    env.Version = config.version
+                    echo "Version: ${Version}"
+                }
+                sh 'git fetch --tags --force origin'
+                withCredentials([file(credentialsId: 'netrc', variable: 'netrc')]) {
+                    sh 'cp $netrc ~/.netrc'
+                }
+            }
+        }
+
+        stage('PR Version Check') {
+            when {
+                expression { env.CHANGE_TARGET == 'main' }
+            }
+            steps {
+                script {
+                    def mainConfigJson = sh(
+                        script: "git show origin/main:config.json",
+                        returnStdout: true
+                    ).trim()
+                    def mainConfig = readJSON text: mainConfigJson
+                    def mainVersion = mainConfig.version
+                    if (Version == mainVersion) {
+                        error "Version not bumped! Current: ${Version}, Main: ${mainVersion}. Please update config.json."
+                    }
+                    echo "Version check passed: ${mainVersion} -> ${Version}"
+                }
+            }
+        }
+
+        stage('Dependencies') {
+            steps {
+                sh 'go mod download'
+                sh 'go mod tidy'
+            }
+        }
+
+        stage('Lint') {
+            steps {
+                sh 'go fmt ./...'
+                sh 'go vet ./...'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'go test -v ./...'
+            }
+        }
+
+        stage('Release') {
+            when {
+                branch 'main'
+            }
+            steps {
+                script {
+                    def tagExists = sh(script: "git tag -l '${Version}' | grep -q .", returnStatus: true) == 0
+                    if (!tagExists) {
+                        sh """
+                            git config user.email 'jenkins@codeclarity.io'
+                            git config user.name 'Jenkins CI'
+                            git tag -a '${Version}' -m 'Release ${Version}'
+                            git push origin refs/tags/${Version}
+                        """
+                        sh "gh release create '${Version}' --title 'Release ${Version}' --generate-notes --prerelease=\$(echo '${Version}' | grep -q 'alpha\\|beta' && echo true || echo false)"
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'rm -f ~/.netrc || true'
+        }
+        failure {
+            echo "Build failed for utility-node-semver ${Version}"
+        }
+    }
+}
