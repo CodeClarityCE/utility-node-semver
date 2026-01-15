@@ -114,7 +114,14 @@ func ParseSemverWithEcosystem(versionLiteral string, ecosystem string) (Semver, 
 	}
 
 	semver.MetaData = GetMetaDataPart(versionLiteral)
+	if semver.MetaData != "" && !isValidMetaData(semver.MetaData) {
+		return Semver{}, ErrInvalidMetaData
+	}
+
 	semver.PreReleaseTag = GetPreReleasePart(versionLiteral)
+	if semver.PreReleaseTag != "" && !isValidPreRelease(semver.PreReleaseTag) {
+		return Semver{}, ErrInvalidPreRelease
+	}
 
 	return semver, nil
 }
@@ -496,4 +503,62 @@ func IsPartialVersion(versionLiteral string) bool {
 func IsWildCardVersion(versionLiteral string) bool {
 	versionLiteral = GetVersionPart(versionLiteral)
 	return strings.Count(versionLiteral, "x") > 0 || strings.Count(versionLiteral, "X") > 0 || strings.Count(versionLiteral, "*") > 0 || versionLiteral == "ANY" || versionLiteral == "*"
+}
+
+// isValidIdentifierChar checks if a character is valid in semver identifiers
+// According to semver spec: alphanumerics and hyphens [0-9A-Za-z-]
+func isValidIdentifierChar(c byte) bool {
+	return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '-'
+}
+
+// isValidMetaData validates build metadata according to semver spec
+// Metadata must comprise only ASCII alphanumerics and hyphens, separated by dots
+func isValidMetaData(metadata string) bool {
+	if metadata == "" {
+		return true
+	}
+	for i := 0; i < len(metadata); i++ {
+		c := metadata[i]
+		if c != '.' && !isValidIdentifierChar(c) {
+			return false
+		}
+	}
+	return true
+}
+
+// isValidPreRelease validates pre-release tag according to semver spec
+// Pre-release identifiers must comprise only ASCII alphanumerics and hyphens
+// Numeric identifiers must NOT have leading zeros
+func isValidPreRelease(preRelease string) bool {
+	if preRelease == "" {
+		return true
+	}
+
+	// Check for valid characters
+	for i := 0; i < len(preRelease); i++ {
+		c := preRelease[i]
+		if c != '.' && !isValidIdentifierChar(c) {
+			return false
+		}
+	}
+
+	// Check for leading zeros in numeric identifiers
+	parts := strings.Split(preRelease, ".")
+	for _, part := range parts {
+		if len(part) > 1 && part[0] == '0' {
+			// Check if it's a numeric identifier
+			isNumeric := true
+			for i := 0; i < len(part); i++ {
+				if part[i] < '0' || part[i] > '9' {
+					isNumeric = false
+					break
+				}
+			}
+			if isNumeric {
+				return false // Leading zeros in numeric identifier
+			}
+		}
+	}
+
+	return true
 }

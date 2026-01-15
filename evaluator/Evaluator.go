@@ -26,25 +26,29 @@ func Satisfies(v versionTypes.Semver, c constraints.Constraint, includePreReleas
 
 	for idx, cRange := range c.Ranges {
 
-		endversionEmpty := cRange.EndVersion == versionTypes.Semver{}
-		startversionEmpty := cRange.StartVersion == versionTypes.Semver{}
-		if !endversionEmpty && !startversionEmpty {
+		// Check if operators are set rather than comparing versions to empty structs
+		// This is because 0.0.0 is a valid version that compares equal to Semver{}
+		hasEndOp := cRange.EndOp != ""
+		hasStartOp := cRange.StartOp != ""
+		if hasEndOp && hasStartOp {
 
 			startSatisified := false
 			endSatisified := false
 
-			if cRange.StartOp == constraints.GT {
+			switch cRange.StartOp {
+			case constraints.GT:
 				startSatisified = v.GT(cRange.StartVersion, false)
-			} else if cRange.StartOp == constraints.GE {
+			case constraints.GE:
 				startSatisified = v.GE(cRange.StartVersion, false)
 			}
 
 			if !startSatisified {
 				conjunctedConditions = append(conjunctedConditions, false)
 			} else {
-				if cRange.EndOp == constraints.LT {
+				switch cRange.EndOp {
+				case constraints.LT:
 					endSatisified = v.LT(cRange.EndVersion, false)
-				} else if cRange.EndOp == constraints.LE {
+				case constraints.LE:
 					endSatisified = v.LE(cRange.EndVersion, false)
 				}
 
