@@ -92,10 +92,12 @@ pipeline {
 
     post {
         always {
-            sh 'rm -f ~/.netrc || true'
+            node('codeclarity') {
+                sh 'rm -f ~/.netrc || true'
+            }
         }
         failure {
-            echo "Build failed for utility-node-semver ${Version}"
+            echo "Build failed for utility-node-semver ${env.Version ?: 'unknown'}"
         }
     }
 }
