@@ -84,7 +84,6 @@ pipeline {
                             git config user.email 'jenkins@codeclarity.io'
                             git config user.name 'Jenkins CI'
                             git tag -a '${Version}' -m 'Release ${Version}'
-                            git push origin refs/tags/${Version}
                         """
                         sh "gh release create '${Version}' --title 'Release ${Version}' --generate-notes --prerelease=\$(echo '${Version}' | grep -q 'alpha\\|beta' && echo true || echo false)"
                     }
