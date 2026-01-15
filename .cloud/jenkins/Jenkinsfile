@@ -23,6 +23,7 @@ pipeline {
                     echo "Version: ${Version}"
                 }
                 sh 'git fetch --tags --force origin'
+                sh 'git fetch origin main:refs/remotes/origin/main || true'
             }
         }
 
