@@ -23,9 +23,6 @@ pipeline {
                     echo "Version: ${Version}"
                 }
                 sh 'git fetch --tags --force origin'
-                withCredentials([file(credentialsId: 'netrc', variable: 'netrc')]) {
-                    sh 'cp $netrc ~/.netrc'
-                }
             }
         }
 
@@ -91,9 +88,6 @@ pipeline {
     }
 
     post {
-        always {
-            sh 'rm -f ~/.netrc || true'
-        }
         failure {
             echo "Build failed for utility-node-semver ${env.Version ?: 'unknown'}"
         }
