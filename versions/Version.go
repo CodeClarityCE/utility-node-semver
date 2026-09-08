@@ -419,12 +419,9 @@ func comparePreRelease(preRelease1 string, preRelease2 string) int {
 	lenParts1 := len(parts1)
 	lenParts2 := len(parts2)
 
-	iterationCount := lenParts1
-	if lenParts2 > lenParts1 {
-		iterationCount = lenParts2
-	}
+	iterationCount := max(lenParts2, lenParts1)
 
-	for i := 0; i < iterationCount; i++ {
+	for i := range iterationCount {
 		iden1 := ""
 		iden2 := ""
 
@@ -543,8 +540,8 @@ func isValidPreRelease(preRelease string) bool {
 	}
 
 	// Check for leading zeros in numeric identifiers
-	parts := strings.Split(preRelease, ".")
-	for _, part := range parts {
+	parts := strings.SplitSeq(preRelease, ".")
+	for part := range parts {
 		if len(part) > 1 && part[0] == '0' {
 			// Check if it's a numeric identifier
 			isNumeric := true
