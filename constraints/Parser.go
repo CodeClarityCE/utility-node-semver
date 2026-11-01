@@ -475,7 +475,7 @@ func parseHyphen(literalList []string) (Range, error) {
 			if err != nil {
 				return Range{}, ErrInvalidVersion
 			}
-			major := strings.Split(partialEndVersion, ".")[0]
+			major, _, _ := strings.Cut(partialEndVersion, ".")
 			minor := int(parsed)
 			minor++
 			coercedPartialEndRange = fmt.Sprintf("%s.%d.0", major, minor)
@@ -513,7 +513,7 @@ func parseHyphen(literalList []string) (Range, error) {
 			if err != nil {
 				return Range{}, ErrInvalidVersion
 			}
-			major := strings.Split(partialEndVersion, ".")[0]
+			major, _, _ := strings.Cut(partialEndVersion, ".")
 			minor := int(parsed)
 			minor++
 			coercedPartialEndRange = fmt.Sprintf("%s.%d.0", major, minor)
