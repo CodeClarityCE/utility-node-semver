@@ -1,6 +1,6 @@
 {
     "name": "node-semver",
-    "version": "v0.0.10-alpha",
+    "version": "v0.0.11-alpha",
     "description": "Node.js semver parsing and comparison utilities",
     "author": "CodeClarity Team",
     "license": "AGPL-3.0"
