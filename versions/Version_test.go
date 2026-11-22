@@ -928,15 +928,16 @@ func testPreReleaseComparisons(t *testing.T, comparisons []PreReleaseComparisonT
 	for _, comparisonToTest := range comparisons {
 		fmt.Printf("\nTesting comparison: %s %s %s\n", comparisonToTest.v1.String(), comperatorOperator, comparisonToTest.v2.String())
 		res := false
-		if comperatorOperator == "<=" {
+		switch comperatorOperator {
+		case "<=":
 			res = comparisonToTest.v1.LE(comparisonToTest.v2, comparisonToTest.IncludePreReleases)
-		} else if comperatorOperator == "<" {
+		case "<":
 			res = comparisonToTest.v1.LT(comparisonToTest.v2, comparisonToTest.IncludePreReleases)
-		} else if comperatorOperator == ">" {
+		case ">":
 			res = comparisonToTest.v1.GT(comparisonToTest.v2, comparisonToTest.IncludePreReleases)
-		} else if comperatorOperator == ">=" {
+		case ">=":
 			res = comparisonToTest.v1.GE(comparisonToTest.v2, comparisonToTest.IncludePreReleases)
-		} else if comperatorOperator == "=" {
+		case "=":
 			res = comparisonToTest.v1.EQ(comparisonToTest.v2, comparisonToTest.IncludePreReleases)
 		}
 
@@ -954,15 +955,16 @@ func testComparisonsBool(t *testing.T, comparisons []ComparisonToTest[bool], com
 	for _, comparisonToTest := range comparisons {
 		fmt.Printf("\nTesting comparison: %s %s %s\n", comparisonToTest.v1.String(), comperatorOperator, comparisonToTest.v2.String())
 		res := false
-		if comperatorOperator == "<=" {
+		switch comperatorOperator {
+		case "<=":
 			res = comparisonToTest.v1.LE(comparisonToTest.v2, false)
-		} else if comperatorOperator == "<" {
+		case "<":
 			res = comparisonToTest.v1.LT(comparisonToTest.v2, false)
-		} else if comperatorOperator == ">" {
+		case ">":
 			res = comparisonToTest.v1.GT(comparisonToTest.v2, false)
-		} else if comperatorOperator == ">=" {
+		case ">=":
 			res = comparisonToTest.v1.GE(comparisonToTest.v2, false)
-		} else if comperatorOperator == "=" {
+		case "=":
 			res = comparisonToTest.v1.EQ(comparisonToTest.v2, false)
 		}
 

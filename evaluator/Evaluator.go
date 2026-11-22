@@ -84,15 +84,16 @@ func Satisfies(v versionTypes.Semver, c constraints.Constraint, includePreReleas
 
 			res := false
 
-			if cRange.StartOp == constraints.GT {
+			switch cRange.StartOp {
+			case constraints.GT:
 				res = v.GT(cRange.StartVersion, false)
-			} else if cRange.StartOp == constraints.GE {
+			case constraints.GE:
 				res = v.GE(cRange.StartVersion, false)
-			} else if cRange.StartOp == constraints.EQ {
+			case constraints.EQ:
 				res = v.EQ(cRange.StartVersion, false)
-			} else if cRange.StartOp == constraints.LT {
+			case constraints.LT:
 				res = v.LT(cRange.StartVersion, false)
-			} else if cRange.StartOp == constraints.LE {
+			case constraints.LE:
 				res = v.LE(cRange.StartVersion, false)
 			}
 
