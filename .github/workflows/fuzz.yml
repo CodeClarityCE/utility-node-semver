@@ -1,0 +1,20 @@
+# Nightly Go fuzzing from the central workflows; see CodeClarityCE/.github.
+name: Fuzz
+
+on:
+  schedule:
+    - cron: "23 2 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  fuzz:
+    uses: CodeClarityCE/.github/.github/workflows/go-fuzz.yml@spec/312-beta
+    permissions:
+      contents: read
+      issues: write # the report job only
