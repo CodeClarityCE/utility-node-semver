@@ -90,7 +90,8 @@ func ParseConstraint(constraintString string) (Constraint, error) {
 	currentLiteralList := []string{}
 	for idx, token := range tokens {
 		literal := literals[idx]
-		if token == OR || token == AND {
+		switch token {
+		case OR, AND:
 			subConstraint, err := parseSubConstraint(currentTokenList, currentLiteralList)
 			if err != nil {
 				return Constraint{}, err
@@ -104,7 +105,7 @@ func ParseConstraint(constraintString string) (Constraint, error) {
 			constraint.Ranges = append(constraint.Ranges, subConstraint)
 			currentTokenList = []Token{}
 			currentLiteralList = []string{}
-		} else if token == EOF {
+		case EOF:
 			subConstraint, err := parseSubConstraint(currentTokenList, currentLiteralList)
 			if err != nil {
 				return Constraint{}, err
@@ -112,11 +113,10 @@ func ParseConstraint(constraintString string) (Constraint, error) {
 			constraint.Ranges = append(constraint.Ranges, subConstraint)
 			currentTokenList = []Token{}
 			currentLiteralList = []string{}
-		} else {
-			if token != SOF {
-				currentTokenList = append(currentTokenList, token)
-				currentLiteralList = append(currentLiteralList, literal)
-			}
+		case SOF:
+		default:
+			currentTokenList = append(currentTokenList, token)
+			currentLiteralList = append(currentLiteralList, literal)
 		}
 	}
 
