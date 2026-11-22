@@ -249,7 +249,7 @@ func removeSuperfluousAndOp(tokens []Token, literals []string) ([]Token, []strin
 				prevPrevPrevToken = tokens[idx-3]
 			}
 
-			if IsRangeToken(prevPrevToken) && prevToken == VERSION_EXPRESSION && (len(tokens)-idx) >= 2 && (prevPrevPrevToken == EOF || IsJoinToken(prevPrevPrevToken)) {
+			if IsRangeToken(prevPrevToken) && prevToken == VERSION_EXPRESSION && (len(tokens)-idx) >= 3 && (prevPrevPrevToken == EOF || IsJoinToken(prevPrevPrevToken)) {
 
 				nextToken := tokens[idx+1]
 				nextNextToken := tokens[idx+2]
