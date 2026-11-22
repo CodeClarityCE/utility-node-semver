@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   fuzz:
-    uses: CodeClarityCE/.github/.github/workflows/go-fuzz.yml@spec/312-beta-readiness
+    uses: CodeClarityCE/.github/.github/workflows/go-fuzz.yml@spec/312-beta
     permissions:
       contents: read
       issues: write # the report job only
