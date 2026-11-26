@@ -137,16 +137,14 @@ func Satisfies(v versionTypes.Semver, c constraints.Constraint, includePreReleas
 }
 
 // Evaluates the given constraints for each provided version and returns the hightest version that satisfies this constraint (if any)
+// Returns the zero Semver when no version satisfies the constraint, whatever the input order
 func MaxSatisfying(versions []versionTypes.Semver, c constraints.Constraint, includePreReleases bool) versionTypes.Semver {
-	if len(versions) == 0 {
-		return versionTypes.Semver{}
-	}
-	max := versions[0]
+	max := versionTypes.Semver{}
+	found := false
 	for _, version := range versions {
-		if Satisfies(version, c, includePreReleases) {
-			if version.GT(max, false) {
-				max = version
-			}
+		if Satisfies(version, c, includePreReleases) && (!found || version.GT(max, false)) {
+			max = version
+			found = true
 		}
 	}
 	return max

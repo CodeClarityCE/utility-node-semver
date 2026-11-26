@@ -1592,6 +1592,25 @@ func TestMaxSatisfyingEvaluation(t *testing.T) {
 			Versions:                     []string{"0.0.0", "2.5.0", "5.6.99", "5.7.19", "6.0.0"},
 			ExpectedMaxSatisfyingVersion: versions.Semver{Major: 5, Minor: 7, Patch: 19},
 		},
+
+		// No version satisfies and the first one is not 0.0.0
+		{
+			ConstraintString:             "^2.0.0",
+			Versions:                     []string{"1.0.0", "1.1.0"},
+			ExpectedMaxSatisfyingVersion: versions.Semver{},
+		},
+		// The first version does not satisfy, a lower one does
+		{
+			ConstraintString:             "^1.0.0",
+			Versions:                     []string{"2.0.0", "1.0.0"},
+			ExpectedMaxSatisfyingVersion: versions.Semver{Major: 1, Minor: 0, Patch: 0},
+		},
+		// Empty list
+		{
+			ConstraintString:             "^1.0.0",
+			Versions:                     []string{},
+			ExpectedMaxSatisfyingVersion: versions.Semver{},
+		},
 	}
 
 	testMaxSatisfying(t, constraintsToTest)
